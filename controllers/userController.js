@@ -25,3 +25,7 @@ module.exports.register = async function(req,res){
         res.redirect('/');
     }
 }
+
+module.exports.renderLogin = function(req, res){
+    res.render('users/login');
+}

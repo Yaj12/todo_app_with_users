@@ -23,9 +23,24 @@ async function authenticate(username, password, done) {
 }
 
 const validationStrategy = new Strategy({
-    usernameField: 'email',
-    passwordField: 'password'
-},
+        usernameField: 'email',
+        passwordField: 'password'
+    },
     authenticate);
 
 passport.use(validationStrategy);
+
+passport.serializeUser(function (user, cb){
+    process.nextTick(function () {
+        cb(null, {id: user.id, username: user.email, displayName: user.displayName});
+    });
+});
+
+passport.deserializeUser(async function (user, cb){
+    // const dbUser = await User.findByPk(user.id);
+    process.nextTick(function () {
+        return cb(null, user);
+    });
+});
+
+module.exports.passport = passport;

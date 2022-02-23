@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const session = require('express-session');
 
 var app = express();
 
@@ -18,9 +19,18 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use(session({
+  secret: 'keyboardCat',
+  resave: true,
+  saveUninitialized: false,
+  cookie:{
+    secure:false,
+    maxAge: 6*60*60*1000
+  }
+}));
+const {passport} = require('./middleware/passport');
+app.use(passport.initialize());
+app.use(passport.authenticate('session'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

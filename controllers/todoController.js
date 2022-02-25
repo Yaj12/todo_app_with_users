@@ -36,12 +36,18 @@ module.exports.addNewItem = async function(req, res){
     res.redirect('/');
 };
 
-
 module.exports.viewEditItem = async function(req, res) {
-    const todo = await Todo.findByPk(req.params.id);
-    res.render('todos/editItem', {item: todo})
+    const todo = await Todo.findOne({
+        where: {
+            id: req.params.id,
+            user_id: req.user.id
+        }});
+    if (!todo) { //if we can't find it
+        res.redirect('/');
+    } else {
+        res.render('todos/editItem', {item:todo})
+    }
 };
-
 
 module.exports.saveEditItem = async function(req, res) {
     await Todo.update({ description: req.body.description}, {
@@ -56,7 +62,8 @@ module.exports.saveEditItem = async function(req, res) {
 module.exports.deleteItem = async function(req, res) {
     await Todo.destroy({
         where: {
-            id: req.params.id
+            id: req.params.id,
+            user_id: req.user.id
         }
     })
     res.redirect('/');

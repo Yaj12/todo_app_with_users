@@ -4,10 +4,23 @@ var router = express.Router();
 const todoController = require('../controllers/todoController');
 const userController = require('../controllers/userController');
 
+function addUserToViews(req, res, next){
+    if (req.user){
+        res.locals.user = req.user;
+    }
+    next();
+}
 
+function redirectGuests(req, res, next){
+    if(!req.user){
+        res.redirect('/login');
+    } else {
+        next();
+    }
+}
 
 /* GET home page. */
-router.get('/',  todoController.listAll);
+router.get('/', addUserToViews, redirectGuests, todoController.listAll);
 
 
 router.get('/item/add',  todoController.displayAddItem);
